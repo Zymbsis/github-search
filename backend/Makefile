@@ -1,2 +1,2 @@
 dev:
-		uvicorn config.asgi:application --reload --lifespan off
+		uv run uvicorn config.asgi:application --reload --lifespan off
