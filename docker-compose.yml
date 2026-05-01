@@ -1,0 +1,37 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  backend:
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      REDIS_URL: redis://redis:6379/1
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+    command: sh -c "uv sync && uv run uvicorn config.asgi:application --reload --lifespan off --host 0.0.0.0"
+
+  frontend:
+    image: node:22-bookworm-slim
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+
+volumes:
+  redis_data:
+  frontend_node_modules:
