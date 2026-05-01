@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 ul,
@@ -28,5 +28,145 @@ dl {
   height: 100%;
   min-height: 0;
   justify-content: center;
-  text-align: center;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #888;
+}
+.search-input {
+  flex: 1;
+  min-width: 0;
+  max-width: 400px;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+
+  &:focus-within {
+    outline: none;
+  }
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.search-controls {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.search-dropdown-root {
+  position: relative;
+}
+
+.search-dropdown-button {
+  min-width: 150px;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.search-dropdown-chevron {
+  color: #888;
+}
+
+.search-dropdown-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+  background: #fff;
+  z-index: 10;
+}
+
+.search-dropdown-list {
+  list-style: none;
+}
+
+.search-dropdown-item {
+  width: 100%;
+  border: none;
+  background: #fff;
+  text-align: left;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.search-dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.search-dropdown-item-active {
+  font-weight: 600;
+}
+
+.results-list {
+  display: grid;
+  max-height: 0;
+  opacity: 0;
+  overflow: clip;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  transition:
+    max-height 0.35s ease-in-out,
+    opacity 0.2s ease-in-out;
+}
+
+.results-list[data-expanded='true'] {
+  max-height: calc(100vh - 240px);
+  opacity: 1;
+  overflow-y: auto;
+  transition:
+    max-height 0.35s ease-in-out,
+    opacity 0.2s ease-in-out 0.35s;
+}
+
+@media (min-width: 768px) {
+  .results-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.results-list-item {
+  background-color: gray;
+  height: 150px;
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

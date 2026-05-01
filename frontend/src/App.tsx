@@ -1,10 +1,14 @@
-import "./index.css";
+import './index.css';
+
+import Search from './components/search';
 
 function App() {
   return (
     <>
       <main className="container">
-        <div className="content-wrapper">hello world</div>
+        <div className="content-wrapper">
+          <Search />
+        </div>
       </main>
     </>
   );
