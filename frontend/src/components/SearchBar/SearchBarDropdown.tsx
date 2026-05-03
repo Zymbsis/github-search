@@ -6,16 +6,24 @@ import {
   GITHUB_ENTITY_OPTIONS,
   QUERY_PARAMS,
 } from '../../constants';
+import ChevronIcon from '../icons/chevron';
+import css from './SearchBar.module.css';
 
-const EntityTypeDropdown = () => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+type GitHubEntityType = keyof typeof GITHUB_ENTITY_OPTIONS;
+
+const isGitHubEntityType = (value: string | null): value is GitHubEntityType =>
+  value !== null && value in GITHUB_ENTITY_OPTIONS;
+
+const SearchBarDropdown = () => {
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
 
-  const entityType = searchParams.get(QUERY_PARAMS.entityType);
+  const entityType =
+    searchParams.get(QUERY_PARAMS.entityType) ?? DEFAULT_ENTITY_TYPE;
 
-  const selectedOption = GITHUB_ENTITY_OPTIONS[entityType]
+  const selectedOption = isGitHubEntityType(entityType)
     ? entityType
     : DEFAULT_ENTITY_TYPE;
 
@@ -34,36 +42,24 @@ const EntityTypeDropdown = () => {
   useOutsideClick(dropdownRef, () => setIsOpen(false));
 
   return (
-    <div
-      className='search-dropdown-root'
-      ref={dropdownRef}
-      aria-haspopup='listbox'
-      aria-expanded={isOpen}>
+    <div className={css.searchDropdownRoot} ref={dropdownRef}>
       <button
         type='button'
-        className='search-dropdown-button'
+        className={css.searchDropdownButton}
         onClick={() => setIsOpen((prev) => !prev)}>
-        <span>{GITHUB_ENTITY_OPTIONS[selectedOption]}</span>
-        <span
-          className={`search-dropdown-chevron ${
-            isOpen ? 'dropdown-open' : ''
-          }`}>
-          &#9662;
-        </span>
+        {GITHUB_ENTITY_OPTIONS[selectedOption]}
+        <ChevronIcon className={css.searchDropdownChevron} data-open={isOpen} />
       </button>
 
       {isOpen && (
-        <div className='search-dropdown-popover'>
-          <ul className='search-dropdown-list' role='listbox'>
+        <div className={css.searchDropdownPopover}>
+          <ul>
             {Object.entries(GITHUB_ENTITY_OPTIONS).map(([key, value]) => (
               <li key={key}>
                 <button
                   type='button'
-                  className={`search-dropdown-item ${
-                    key === selectedOption ? 'search-dropdown-item-active' : ''
-                  }`}
-                  role='option'
-                  aria-selected={key === selectedOption}
+                  data-active={key === selectedOption}
+                  className={css.searchDropdownItem}
                   onClick={() => selectOption(key)}>
                   {value}
                 </button>
@@ -76,4 +72,4 @@ const EntityTypeDropdown = () => {
   );
 };
 
-export default EntityTypeDropdown;
+export default SearchBarDropdown;

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const GithubUserSchema = z.object({
+const GithubUserSchema = z.object({
   id: z.number(),
   login: z.string(),
   avatar_url: z.url(),
@@ -8,10 +8,10 @@ export const GithubUserSchema = z.object({
   score: z.number(),
   location: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
-  entity: z.literal('user').optional().default('user'),
+  entity: z.literal('user'),
 });
 
-export const GithubRepositorySchema = z.object({
+const GithubRepositorySchema = z.object({
   id: z.number(),
   name: z.string(),
   full_name: z.string(),
@@ -19,19 +19,24 @@ export const GithubRepositorySchema = z.object({
   description: z.string().nullable(),
   language: z.string().nullable(),
   score: z.number(),
-  stargazers_count: z.number(),
+  stargazers_count: z.number().optional().default(0),
   owner: z.object({
     login: z.string(),
     avatar_url: z.string(),
     html_url: z.string(),
   }),
-  entity: z.literal('repository').optional().default('repository'),
+  entity: z.literal('repository'),
 });
+
+export const ResultItemSchema = z.discriminatedUnion('entity', [
+  GithubUserSchema,
+  GithubRepositorySchema,
+]);
 
 export const SearchApiResponseSchema = z.object({
   data: z.object({
     total_count: z.number(),
-    items: z.array(GithubUserSchema.or(GithubRepositorySchema)),
+    items: z.array(ResultItemSchema),
   }),
 });
 
@@ -42,4 +47,5 @@ export const ApiErrorSchema = z.object({
 
 export type GithubUser = z.infer<typeof GithubUserSchema>;
 export type GithubRepository = z.infer<typeof GithubRepositorySchema>;
+export type ResultItem = z.infer<typeof ResultItemSchema>;
 export type SearchApiResponse = z.infer<typeof SearchApiResponseSchema>;

@@ -6,6 +6,7 @@ import {
   MIN_SEARCH_STRING_LENGTH,
   QUERY_PARAMS,
 } from '../../constants';
+import css from './SearchBar.module.css';
 
 const SearchInput = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,9 +32,9 @@ const SearchInput = () => {
   }, [debouncedSearchValue, setSearchParams]);
 
   return (
-    <div className='search-input-wrapper'>
+    <div className={css.searchInputWrapper}>
       <input
-        className='search-input'
+        className={css.searchInput}
         placeholder='Start typing to search ...'
         value={searchValue}
         onChange={(event) =>
@@ -44,10 +45,7 @@ const SearchInput = () => {
       />
 
       {(tooShortSearchValue || tooLongSearchValue) && (
-        <span
-          className={`search-input-info ${
-            tooLongSearchValue ? 'search-input-error' : ''
-          }`}>
+        <span className={css.searchInputInfo} data-error={tooLongSearchValue}>
           {tooShortSearchValue && `* Min ${MIN_SEARCH_STRING_LENGTH} symbols`}
           {tooLongSearchValue && `* Max ${MAX_SEARCH_STRING_LENGTH} symbols`}
         </span>

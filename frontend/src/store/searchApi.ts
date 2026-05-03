@@ -32,8 +32,8 @@ export const searchApi = createApi({
         const result = ApiErrorSchema.safeParse(response.data);
         if (result.success) {
           return (
-            result.data.error ??
-            result.data.detail ??
+            result.data.error ||
+            result.data.detail ||
             'Unable to fetch results.'
           );
         }

@@ -3,12 +3,12 @@ export const QUERY_PARAMS = {
   entityType: 'type',
 };
 
-export const DEFAULT_ENTITY_TYPE = 'users';
+export const DEFAULT_ENTITY_TYPE = 'users' as const;
 
 export const GITHUB_ENTITY_OPTIONS = {
-  users: 'Users',
-  repositories: 'Repositories',
+  users: 'users' as const,
+  repositories: 'repositories' as const,
 };
 
 export const MIN_SEARCH_STRING_LENGTH = 3;
-export const MAX_SEARCH_STRING_LENGTH = 64;
+export const MAX_SEARCH_STRING_LENGTH = 256;
