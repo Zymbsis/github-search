@@ -68,6 +68,7 @@ class TestSerializeGithubResponse:
         result = serialize_github_response(raw, SearchType.USERS)
         assert result["items"][0]["login"] == "a"
         assert result["items"][0]["location"] == "Kyiv"
+        assert result["items"][0]["entity"] == "user"
 
     def test_repositories(self):
         raw = {
@@ -87,3 +88,4 @@ class TestSerializeGithubResponse:
         result = serialize_github_response(raw, SearchType.REPOSITORIES)
         assert result["items"][0]["owner"]["login"] == "a"
         assert result["items"][0]["stargazers_count"] == 42
+        assert result["items"][0]["entity"] == "repository"

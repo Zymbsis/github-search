@@ -11,6 +11,10 @@ class UserItemSerializer(serializers.Serializer):
     score = serializers.FloatField()
     location = serializers.CharField(allow_null=True, required=False)
     name = serializers.CharField(allow_null=True, required=False)
+    entity = serializers.SerializerMethodField()
+
+    def get_entity(self, obj) -> str:
+        return "user"
 
 
 class RepositoryOwnerSerializer(serializers.Serializer):
@@ -29,6 +33,10 @@ class RepositoryItemSerializer(serializers.Serializer):
     score = serializers.FloatField()
     stargazers_count = serializers.IntegerField()
     owner = RepositoryOwnerSerializer()
+    entity = serializers.SerializerMethodField()
+
+    def get_entity(self, obj) -> str:
+        return "repository"
 
 
 class UserSearchResponseSerializer(serializers.Serializer):
