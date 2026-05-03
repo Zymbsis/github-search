@@ -97,11 +97,11 @@ included only because some DRF internals expect them; no migrations are needed.
 | ---------------------- | --------------------------------------------------------- |
 | `SECRET_KEY`           | Django secret key                                         |
 | `DEBUG`                | Django debug mode                                         |
-| `ALLOWED_HOSTS`        | Comma-separated allowed hosts                             |
+| `ALLOWED_HOSTS`        | JSON array of allowed hosts                               |
 | `GITHUB_TOKEN`         | GitHub personal access token (requires no special scopes) |
 | `REDIS_URL`            | Redis connection URL                                      |
 | `CACHE_CLEAR_TOKEN`    | Shared secret for the cache clear endpoint                |
-| `CORS_ALLOWED_ORIGINS` | Comma-separated allowed CORS origins                      |
+| `CORS_ALLOWED_ORIGINS` | JSON array of allowed CORS origins                        |
 
 ### Running Locally
 
