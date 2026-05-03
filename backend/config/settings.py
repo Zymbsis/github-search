@@ -9,15 +9,19 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
+    "corsheaders",
     "rest_framework",
     "adrf",
     "github_search",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = settings.CORS_ALLOWED_ORIGINS
 
 ROOT_URLCONF = "config.urls"
 
