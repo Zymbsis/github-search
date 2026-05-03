@@ -1,36 +1,63 @@
-from dataclasses import dataclass
+from rest_framework import serializers
+
+from github_search.enums import SearchType
 
 
-@dataclass
-class UserItem:
-    id: int
-    login: str
-    html_url: str
-    avatar_url: str
-    score: float
-    location: str | None
-    name: str | None
+class UserItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    login = serializers.CharField()
+    html_url = serializers.URLField()
+    avatar_url = serializers.URLField()
+    score = serializers.FloatField()
+    location = serializers.CharField(allow_null=True, required=False)
+    name = serializers.CharField(allow_null=True, required=False)
 
 
-@dataclass
-class RepositoryOwner:
-    login: str
-    avatar_url: str
-    html_url: str
+class RepositoryOwnerSerializer(serializers.Serializer):
+    login = serializers.CharField()
+    avatar_url = serializers.URLField()
+    html_url = serializers.URLField()
 
 
-@dataclass
-class RepositoryItem:
-    name: str
-    full_name: str
-    html_url: str
-    description: str | None
-    language: str | None
-    score: float
-    owner: RepositoryOwner
+class RepositoryItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    full_name = serializers.CharField()
+    html_url = serializers.URLField()
+    description = serializers.CharField(allow_null=True)
+    language = serializers.CharField(allow_null=True)
+    score = serializers.FloatField()
+    owner = RepositoryOwnerSerializer()
 
 
-@dataclass
-class SearchResponse[T]:
-    total_count: int
-    items: list[T]
+class UserSearchResponseSerializer(serializers.Serializer):
+    total_count = serializers.IntegerField()
+    items = UserItemSerializer(many=True)
+
+
+class RepositorySearchResponseSerializer(serializers.Serializer):
+    total_count = serializers.IntegerField()
+    items = RepositoryItemSerializer(many=True)
+
+
+class UserSearchResultSerializer(serializers.Serializer):
+    data = UserSearchResponseSerializer()
+
+
+class RepositorySearchResultSerializer(serializers.Serializer):
+    data = RepositorySearchResponseSerializer()
+
+
+class SearchErrorSerializer(serializers.Serializer):
+    error = serializers.CharField()
+
+
+_RESPONSE_SERIALIZERS = {
+    SearchType.USERS: UserSearchResponseSerializer,
+    SearchType.REPOSITORIES: RepositorySearchResponseSerializer,
+}
+
+
+def serialize_github_response(data: dict, search_type: SearchType) -> dict:
+    serializer_cls = _RESPONSE_SERIALIZERS[search_type]
+    return serializer_cls(instance=data).data

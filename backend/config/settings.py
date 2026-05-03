@@ -11,9 +11,22 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "corsheaders",
     "rest_framework",
+    "drf_spectacular",
     "adrf",
     "github_search",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "GitHub Search API",
+    "DESCRIPTION": "Search GitHub users and repositories with caching.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+}
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

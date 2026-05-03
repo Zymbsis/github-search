@@ -7,7 +7,7 @@ GITHUB_SEARCH_BASE_URL = "https://api.github.com/search"
 USER_ENRICH_CONCURRENCY = 5
 
 SEARCH_QUALIFIERS = {
-    SearchType.USERS: "in:name, login",
+    SearchType.USERS: "in:name,login",
     SearchType.REPOSITORIES: "in:name",
 }
 

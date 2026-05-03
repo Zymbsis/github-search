@@ -2,15 +2,45 @@ import hmac
 
 from adrf.decorators import api_view
 from django.core.cache import cache
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    OpenApiTypes,
+    PolymorphicProxySerializer,
+    extend_schema,
+)
 from rest_framework import status
 from rest_framework.response import Response
 
 from config.env import settings as env_settings
 from github_search.enums import SearchType
+from github_search.schemas import (
+    RepositorySearchResultSerializer,
+    SearchErrorSerializer,
+    UserSearchResultSerializer,
+)
 from github_search.serializers import GithubSearchSerializer
 from github_search.services import search_github
 
 
+@extend_schema(
+    summary="Search GitHub users or repositories",
+    request=GithubSearchSerializer,
+    responses={
+        200: PolymorphicProxySerializer(
+            component_name="SearchResult",
+            serializers=[
+                UserSearchResultSerializer,
+                RepositorySearchResultSerializer,
+            ],
+            resource_type_field_name=None,
+        ),
+        400: OpenApiResponse(
+            response=OpenApiTypes.OBJECT, description="Validation error."
+        ),
+        502: SearchErrorSerializer,
+    },
+)
 @api_view(["POST"])
 async def github_search(request):
     serializer = GithubSearchSerializer(data=request.data)
@@ -28,6 +58,27 @@ async def github_search(request):
     return Response(result)
 
 
+@extend_schema(
+    summary="Clear cached GitHub search results",
+    request=None,
+    parameters=[
+        OpenApiParameter(
+            name="X-Cache-Token",
+            type=str,
+            location=OpenApiParameter.HEADER,
+            required=True,
+            description="Shared secret token configured via CACHE_CLEAR_TOKEN.",
+        ),
+    ],
+    responses={
+        200: OpenApiResponse(
+            response=OpenApiTypes.OBJECT, description="Cache cleared."
+        ),
+        403: OpenApiResponse(
+            response=OpenApiTypes.OBJECT, description="Forbidden."
+        ),
+    },
+)
 @api_view(["POST"])
 async def clear_cache(request):
     token = request.headers.get("X-Cache-Token")

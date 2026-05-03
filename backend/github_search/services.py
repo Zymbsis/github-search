@@ -1,5 +1,4 @@
 import asyncio
-from dataclasses import asdict
 
 import httpx
 from django.core.cache import cache
@@ -10,7 +9,7 @@ from github_search.constants import (
     USER_ENRICH_CONCURRENCY,
 )
 from github_search.enums import SearchType
-from github_search.mappers import map_github_response
+from github_search.schemas import serialize_github_response
 from github_search.utils import (
     github_headers,
     github_search_url,
@@ -22,6 +21,7 @@ from github_search.utils import (
 async def search_github(search_type: SearchType, search: str) -> dict:
     cache_key = make_cache_key(search_type, search)
     cached = cache.get(cache_key)
+
     if cached is not None:
         return {"data": cached}
 
@@ -49,7 +49,7 @@ async def search_github(search_type: SearchType, search: str) -> dict:
     except httpx.RequestError as e:
         return {"error": f"GitHub API connection error: {e}"}
 
-    data = asdict(map_github_response(raw, search_type))
+    data = serialize_github_response(raw, search_type)
     cache.set(cache_key, data, CACHE_TTL)
 
     return {"data": data}
