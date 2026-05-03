@@ -86,6 +86,9 @@ async def clear_cache(request):
     if not hmac.compare_digest(token or "", expected):
         return Response({"detail": "Forbidden."}, status=status.HTTP_403_FORBIDDEN)
 
-    cache.delete_pattern("github_search:*")
+    if hasattr(cache, "delete_pattern"):
+        cache.delete_pattern("github_search:*")
+    else:
+        cache.clear()
 
     return Response({"detail": "Cache cleared."})

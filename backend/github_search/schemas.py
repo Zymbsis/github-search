@@ -27,6 +27,7 @@ class RepositoryItemSerializer(serializers.Serializer):
     description = serializers.CharField(allow_null=True)
     language = serializers.CharField(allow_null=True)
     score = serializers.FloatField()
+    stargazers_count = serializers.IntegerField()
     owner = RepositoryOwnerSerializer()
 
 
