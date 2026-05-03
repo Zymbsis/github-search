@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1"]
     REDIS_URL: RedisDsn = RedisDsn("redis://127.0.0.1:6379/1")
+    CACHE_CLEAR_TOKEN: str
 
 
 settings = Settings()
