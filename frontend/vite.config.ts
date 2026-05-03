@@ -6,7 +6,7 @@ import babel from '@rolldown/plugin-babel';
 export default defineConfig({
   plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
   preview: {
-    allowedHosts: true,
+    allowedHosts: ['imaginative-strength-production-4a6a.up.railway.app'],
     host: '0.0.0.0',
     port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
   },
