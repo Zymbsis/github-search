@@ -42,7 +42,7 @@ const RepositoryCard = ({ repository }: Props) => {
           href={repository.html_url}
           rel='noreferrer'
           target='_blank'
-          className='result-card-name'>
+          className={css.resultCardName}>
           {repository.name}
         </a>
 
