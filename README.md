@@ -110,6 +110,8 @@ docker compose up
 ```
 
 The backend starts at `http://localhost:8000`. Redis is started automatically.
+The same Compose file also runs the Vite dev server for the frontend on port
+`5173` (see [Frontend](#frontend) → Running Locally).
 
 ### Running Tests
 
@@ -121,3 +123,89 @@ uv run --group dev pytest tests/ -v
 Tests are unit tests only. They cover cache key normalization, GitHub error
 parsing, request validation (including qualifier stripping), and response
 serialization. No HTTP calls or database access occur during the test suite.
+
+## Frontend
+
+### Tech Stack
+
+- **React 19 + TypeScript** - UI and type safety
+- **Vite** - dev server and production build
+- **React Compiler** (`babel-plugin-react-compiler` via `@rolldown/plugin-babel`) -
+  automatic memoization at compile time
+- **Redux Toolkit + RTK Query** - global store and cached HTTP layer for search
+- **Zod** - runtime parsing of successful API responses into typed data
+- **React Router** - `BrowserRouter` and URL-driven search state (`useSearchParams`)
+- **Sonner** - toast notifications when a search request fails
+- **CSS Modules** - scoped styles for the search bar and results
+
+### Architecture
+
+The frontend is a single-page app with no routing pages beyond the root: search
+state lives in the URL query string so results are linkable and refresh-safe.
+
+```
+frontend/
+  src/
+    App.tsx                 Shell: layout, Sonner toaster, search + results
+    main.tsx                `Provider`, `BrowserRouter`, app mount
+    constants.ts            Query param names, min/max query length, defaults
+    components/
+      SearchBar/            Header, debounced input, entity type dropdown
+      SearchResults/        Result list, user/repository cards, empty states
+      Loader/               Inline / backdrop loading indicator
+      icons/                SVG icons used in the UI
+    hooks/                  `useDebounce`, `useOutsideClick`
+    store/
+      store.ts              Redux store with RTK Query middleware
+      searchApi.ts          `search` endpoint: `POST` to `/search` under `VITE_API_URL`
+      schemas.ts            Zod schemas and inferred types for API payloads
+```
+
+### Key Decisions
+
+**URL as the source of truth** The input and dropdown sync `search` and `type`
+query parameters. The search field is debounced before updating the URL, so the
+address bar does not change on every keystroke. RTK Query reads those parameters;
+if the trimmed query is shorter than the minimum length (3 characters), the
+hook receives `skipToken` and no network request is sent.
+
+**Validated responses** Successful JSON is passed through `SearchApiResponseSchema`
+so the UI only renders data that matches the expected shape (discriminated union
+on `entity`: `user` vs `repository`). Errors from the API are normalized to a
+string message for toasts when possible.
+
+**RTK Query cache** `keepUnusedDataFor` is set to one hour so revisiting the same
+search within a session avoids duplicate calls while the tab stays open.
+
+### Environment Variables
+
+| Variable       | Description                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `VITE_API_URL` | Base URL for the backend API **including** the `/api` path (e.g. `http://localhost:8000/api`) |
+
+Copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_URL` before
+running the dev server. Vite only exposes variables prefixed with `VITE_`.
+
+### Running Locally
+
+From the repository root, Docker Compose starts the frontend dev server together
+with the backend and Redis:
+
+```bash
+docker compose up
+```
+
+The UI is available at `http://localhost:5173` (Vite). Ensure `VITE_API_URL` in
+`frontend/.env` points at your backend (for Compose, typically
+`http://localhost:8000/api`).
+
+To run the frontend alone:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Other scripts: `npm run build` (typecheck + production bundle), `npm run preview`
+(local preview of the build), `npm run lint` (ESLint).

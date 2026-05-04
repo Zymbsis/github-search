@@ -30,8 +30,15 @@ const SearchResults = () => {
   const { data, isFetching, isError, error } = useSearchQuery(queryArg);
 
   const items = data?.data.items;
-  const isExpanded = isFetching || !!items;
+  const isExpanded =
+    (isFetching || !!items) && searchValue.length >= MIN_SEARCH_STRING_LENGTH;
   const isNotFound = !isFetching && items && items.length === 0;
+  const showResults =
+    !isFetching &&
+    !isError &&
+    items &&
+    items.length > 0 &&
+    searchValue.length >= MIN_SEARCH_STRING_LENGTH;
 
   useEffect(() => {
     if (isError && error) {
@@ -43,18 +50,15 @@ const SearchResults = () => {
   }, [isError, error]);
 
   return (
-    <>
-      <ul
-        className={css.resultsList}
-        data-expanded={isExpanded}
-        data-empty={items && items.length === 0}>
-        {isFetching && <Loader backdrop>Loading...</Loader>}
-        {items &&
-          items.length > 0 &&
-          items.map((item) => <SearchResultsCard key={item.id} item={item} />)}
-        {isNotFound && <li>No results found</li>}
-      </ul>
-    </>
+    <ul
+      className={css.resultsList}
+      data-expanded={isExpanded}
+      data-empty={!showResults}>
+      {isFetching && <Loader backdrop>Loading...</Loader>}
+      {showResults &&
+        items.map((item) => <SearchResultsCard key={item.id} item={item} />)}
+      {isNotFound && <li>No results found</li>}
+    </ul>
   );
 };
 
