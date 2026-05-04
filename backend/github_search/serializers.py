@@ -20,6 +20,7 @@ class GithubSearchSerializer(serializers.Serializer):
     search = serializers.CharField(
         min_length=SEARCH_QUERY_MIN_LENGTH, max_length=SEARCH_QUERY_MAX_LENGTH
     )
+    page = serializers.IntegerField(required=False, default=1, min_value=1)
 
     def validate_search(self, value: str) -> str:
         cleaned = _QUALIFIER_RE.sub("", value)

@@ -22,10 +22,17 @@ const SearchInput = () => {
   useEffect(() => {
     setSearchParams((params) => {
       const nextParams = new URLSearchParams(params);
+      const prevSearch = params.get(QUERY_PARAMS.searchString) ?? '';
 
-      if (debouncedSearchValue.length < MIN_SEARCH_STRING_LENGTH)
+      if (debouncedSearchValue.length < MIN_SEARCH_STRING_LENGTH) {
         nextParams.delete(QUERY_PARAMS.searchString);
-      else nextParams.set(QUERY_PARAMS.searchString, debouncedSearchValue);
+        nextParams.delete(QUERY_PARAMS.page);
+        return nextParams;
+      }
+
+      nextParams.set(QUERY_PARAMS.searchString, debouncedSearchValue);
+      if (prevSearch.trim() !== debouncedSearchValue)
+        nextParams.delete(QUERY_PARAMS.page);
 
       return nextParams;
     });

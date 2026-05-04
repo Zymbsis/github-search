@@ -1,21 +1,30 @@
-.resultsList {
+.resultsRoot {
   position: relative;
-  display: grid;
+  display: flex;
+  gap: 24px;
+  flex-direction: column;
   height: 0;
   opacity: 0;
   overflow: clip;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-content: start;
-  gap: 12px;
   transition:
     height 0.35s ease-in-out,
     opacity 0.2s ease-in-out 0.35s;
 }
 
-.resultsList[data-expanded='true'] {
+.resultsRoot[data-expanded='true'] {
   height: calc(100vh - 240px);
   opacity: 1;
+}
+
+.resultsList {
+  position: relative;
+  display: grid;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 12px;
 }
 
 .resultsList[data-empty='true'] {

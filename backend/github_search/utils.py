@@ -19,9 +19,9 @@ def github_headers() -> dict:
     }
 
 
-def make_cache_key(search_type: SearchType, search: str) -> str:
+def make_cache_key(search_type: SearchType, search: str, page: int) -> str:
     normalized = re.sub(r"\s+", " ", search.strip().lower())
-    raw = f"{search_type.value}:{normalized}"
+    raw = f"{search_type.value}:{normalized}:p{page}"
     digest = hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()
 
     return f"github_search:v1:{digest}"
