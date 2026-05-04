@@ -8,10 +8,19 @@ from github_search.utils import make_cache_key, parse_github_error
 
 class TestMakeCacheKey:
     def test_normalizes_whitespace_and_case(self):
-        assert make_cache_key(SearchType.USERS, "Foo  Bar") == make_cache_key(SearchType.USERS, "foo bar")
+        assert make_cache_key(SearchType.USERS, "Foo  Bar", 1) == make_cache_key(
+            SearchType.USERS, "foo bar", 1
+        )
 
     def test_different_types_produce_different_keys(self):
-        assert make_cache_key(SearchType.USERS, "react") != make_cache_key(SearchType.REPOSITORIES, "react")
+        assert make_cache_key(SearchType.USERS, "react", 1) != make_cache_key(
+            SearchType.REPOSITORIES, "react", 1
+        )
+
+    def test_different_pages_produce_different_keys(self):
+        assert make_cache_key(SearchType.USERS, "react", 1) != make_cache_key(
+            SearchType.USERS, "react", 2
+        )
 
 
 class TestParseGithubError:
@@ -54,6 +63,19 @@ class TestGithubSearchSerializer:
     def test_only_qualifiers_fails(self):
         assert not self._s({"type": "users", "search": "in:name"}).is_valid()
 
+    def test_page_defaults_to_one(self):
+        s = self._s({"type": "users", "search": "tom"})
+        assert s.is_valid()
+        assert s.validated_data["page"] == 1
+
+    def test_page_explicit(self):
+        s = self._s({"type": "users", "search": "tom", "page": 2})
+        assert s.is_valid()
+        assert s.validated_data["page"] == 2
+
+    def test_page_below_one_invalid(self):
+        assert not self._s({"type": "users", "search": "tom", "page": 0}).is_valid()
+
 
 class TestSerializeGithubResponse:
     def test_users(self):
@@ -65,10 +87,11 @@ class TestSerializeGithubResponse:
                 "score": 1.0, "location": "Kyiv", "name": "Alice",
             }],
         }
-        result = serialize_github_response(raw, SearchType.USERS)
+        result = serialize_github_response(raw, SearchType.USERS, page=1)
         assert result["items"][0]["login"] == "a"
         assert result["items"][0]["location"] == "Kyiv"
         assert result["items"][0]["entity"] == "user"
+        assert result["page"] == 1
 
     def test_repositories(self):
         raw = {
@@ -85,7 +108,8 @@ class TestSerializeGithubResponse:
                 },
             }],
         }
-        result = serialize_github_response(raw, SearchType.REPOSITORIES)
+        result = serialize_github_response(raw, SearchType.REPOSITORIES, page=2)
         assert result["items"][0]["owner"]["login"] == "a"
         assert result["items"][0]["stargazers_count"] == 42
         assert result["items"][0]["entity"] == "repository"
+        assert result["page"] == 2

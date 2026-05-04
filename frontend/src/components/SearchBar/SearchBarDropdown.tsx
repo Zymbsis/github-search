@@ -31,7 +31,9 @@ const SearchBarDropdown = () => {
     if (value !== selectedOption)
       setSearchParams((params) => {
         const nextParams = new URLSearchParams(params);
+
         nextParams.set(QUERY_PARAMS.entityType, value);
+        nextParams.delete(QUERY_PARAMS.page);
 
         return nextParams;
       });

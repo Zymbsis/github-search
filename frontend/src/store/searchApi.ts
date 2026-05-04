@@ -7,6 +7,7 @@ type SearchEntityType = 'users' | 'repositories';
 export type SearchQueryArgs = {
   type: SearchEntityType;
   search: string;
+  page: number;
 };
 
 const baseUrl = import.meta.env.VITE_API_URL as string | undefined;
@@ -21,10 +22,10 @@ export const searchApi = createApi({
   keepUnusedDataFor: 60 * 60,
   endpoints: (builder) => ({
     search: builder.query<SearchApiResponse, SearchQueryArgs>({
-      query: ({ type, search }) => ({
+      query: ({ type, search, page }) => ({
         url: '/search',
         method: 'POST',
-        body: { type, search },
+        body: { type, search, page },
       }),
       transformResponse: (raw: unknown): SearchApiResponse =>
         SearchApiResponseSchema.parse(raw),

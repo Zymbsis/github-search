@@ -37,6 +37,7 @@ export const SearchApiResponseSchema = z.object({
   data: z.object({
     total_count: z.number(),
     items: z.array(ResultItemSchema),
+    page: z.number(),
   }),
 });
 

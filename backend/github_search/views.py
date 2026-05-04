@@ -50,6 +50,7 @@ async def github_search(request):
     result = await search_github(
         search_type=SearchType(serializer.validated_data["type"]),
         search=serializer.validated_data["search"],
+        page=serializer.validated_data.get("page", 1),
     )
 
     if "error" in result:

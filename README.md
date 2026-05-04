@@ -44,11 +44,15 @@ github_search/
 #### POST `/api/search`
 
 ```json
-{ "type": "users", "search": "torvalds" }
-{ "type": "repositories", "search": "django" }
+{ "type": "users", "search": "torvalds", "page": 1 }
+{ "type": "repositories", "search": "django", "page": 2 }
 ```
 
-Returns `{ "data": { "total_count": ..., "items": [...] } }` on success, or
+Optional `page` defaults to `1`. Each `(type, search, page)` combination is
+cached separately.
+
+Returns
+`{ "data": { "total_count": ..., "items": [...], "page": ... } }` on success, or
 `{ "error": "..." }` on GitHub API failure.
 
 #### POST `/api/clear-cache`
@@ -165,9 +169,10 @@ frontend/
 
 **URL as the source of truth** The input and dropdown sync `search` and `type`
 query parameters. The search field is debounced before updating the URL, so the
-address bar does not change on every keystroke. RTK Query reads those parameters;
-if the trimmed query is shorter than the minimum length (3 characters), the
-hook receives `skipToken` and no network request is sent.
+address bar does not change on every keystroke. Pagination uses the `page` query
+parameter (omitted when equal to `1`). RTK Query reads those parameters; if the
+trimmed query is shorter than the minimum length (3 characters), the hook
+receives `skipToken` and no network request is sent.
 
 **Validated responses** Successful JSON is passed through `SearchApiResponseSchema`
 so the UI only renders data that matches the expected shape (discriminated union

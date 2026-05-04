@@ -42,11 +42,13 @@ class RepositoryItemSerializer(serializers.Serializer):
 class UserSearchResponseSerializer(serializers.Serializer):
     total_count = serializers.IntegerField()
     items = UserItemSerializer(many=True)
+    page = serializers.IntegerField()
 
 
 class RepositorySearchResponseSerializer(serializers.Serializer):
     total_count = serializers.IntegerField()
     items = RepositoryItemSerializer(many=True)
+    page = serializers.IntegerField()
 
 
 class UserSearchResultSerializer(serializers.Serializer):
@@ -67,6 +69,7 @@ _RESPONSE_SERIALIZERS = {
 }
 
 
-def serialize_github_response(data: dict, search_type: SearchType) -> dict:
+def serialize_github_response(data: dict, search_type: SearchType, *, page: int) -> dict:
     serializer_cls = _RESPONSE_SERIALIZERS[search_type]
-    return serializer_cls(instance=data).data
+    payload = {**data, "page": page}
+    return serializer_cls(instance=payload).data
